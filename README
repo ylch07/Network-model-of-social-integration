@@ -1,0 +1,37 @@
+1. To compile the codes, open a terminal and run the following command line
+
+      	      make adapt
+
+
+2. To run the program, simply execute the executable file we just compiled
+
+      	      ./adapt
+
+3. I created several key functions for the graphic display:
+
+     q: quit the program
+
+     r: toggle between running and pausing the simulation
+
+     l: turn the lines of connections on or off
+
+     c: print the current number of clusters in the terminal
+        (better to pause the simulation first)
+
+     d: get the degree distribution (up to 20) at the moment
+        (needs an output function to get the results; currently has no visible effects)
+
+4. Currently, the program takes no input arguments. I plan to create an input text file for the parameter values of the model. At the moment, the parameter values are hard-coded in Main.cxx and in Model/ModelC.cxx, and you would need to recompile the codes every time you change the parameter values.
+
+5. The source codes are in several different folders:
+   Node/ --- codes related to the network configuration and the nodes
+   Model/ --- codes related to the population model
+   Graphics/ --- codes related to the visual display
+   Stats/ --- codes related to the calculation of the statistics
+
+6. The codes can be compiled with g++ in MacOS and in Linux. If you are using a differnt compiler, please modify GNUMakefile accordingly.
+
+7. The program requires the OpenGL library for the graphic display. If OpenGL and OpenGL Utility Toolkit (glut) does not come with the installaiton of your operating system, please look up the instructions to install the library.
+
+=====
+Author: Yao-li Chuang
