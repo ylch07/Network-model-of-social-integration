@@ -1,3 +1,11 @@
+These are the source codes of the network model of social integration that
+we published in the paper "A network model of immigration: Enclave formation 
+vs. cultural integration" on the AIMS journal of "Networks and Heterogeneous 
+Media".
+
+doi: 10.3934/nhm.2019004
+
+
 1. To compile the codes, open a terminal and run the following command line
 
       	      make adapt
