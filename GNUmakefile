@@ -30,7 +30,7 @@ NODE = Node
 MODEL = Model
 GRAPH = Graphics
 STATS = Stats
-OBJ = OF         # temporary folder to put object files
+OBJ = OF
 
 adapt :  $(OBJ)/AgentC.o $(OBJ)/NodeC.o $(OBJ)/NodeListC.o \
          $(OBJ)/ModelC.o $(OBJ)/StatC.o $(OBJ)/GraphModelC.o \
