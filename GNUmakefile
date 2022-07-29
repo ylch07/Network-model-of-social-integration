@@ -30,30 +30,37 @@ NODE = Node
 MODEL = Model
 GRAPH = Graphics
 STATS = Stats
+OBJ = OF         # temporary folder to put object files
 
-adapt :  OF/AgentC.o OF/NodeC.o OF/NodeListC.o OF/ModelC.o OF/StatC.o \
-         OF/GraphModelC.o \
+adapt :  $(OBJ)/AgentC.o $(OBJ)/NodeC.o $(OBJ)/NodeListC.o \
+         $(OBJ)/ModelC.o $(OBJ)/StatC.o $(OBJ)/GraphModelC.o \
          Main.cxx Main.H CCommon.h $(GRAPH)/GraphicCommon.hpp
-	$(CPP) -o adapt OF/AgentC.o OF/NodeC.o OF/NodeListC.o OF/ModelC.o \
-                       OF/StatC.o OF/GraphModelC.o \
-                       Main.cxx \
-                       $(LDFLAGS) $(GLFLAGS)
+	$(CPP) -o adapt $(OBJ)/AgentC.o $(OBJ)/NodeC.o \
+                        $(OBJ)/NodeListC.o $(OBJ)/ModelC.o \
+                        $(OBJ)/StatC.o $(OBJ)/GraphModelC.o \
+                        Main.cxx \
+                        $(LDFLAGS) $(GLFLAGS)
 
-OF/AgentC.o : $(GRAPH)/AgentC.cxx $(GRAPH)/AgentC.hpp CCommon.h
-	$(CPP) -c $(GRAPH)/AgentC.cxx -o OF/AgentC.o
-OF/NodeC.o : $(NODE)/NodeC.cxx $(NODE)/NodeC.hpp CCommon.h
-	$(CPP) -c $(NODE)/NodeC.cxx -o OF/NodeC.o
-OF/NodeListC.o : $(NODE)/NodeListC.cxx $(NODE)/NodeListC.hpp \
-                  $(NODE)/NodeC.hpp CCommon.h
-	$(CPP) -c $(NODE)/NodeListC.cxx -o OF/NodeListC.o
-OF/ModelC.o : $(MODEL)/ModelC.cxx $(NODE)/NodeListC.hpp CCommon.h
-	$(CPP) -c $(MODEL)/ModelC.cxx -o OF/ModelC.o
-OF/StatC.o : $(STATS)/StatC.cxx $(NODE)/NodeListC.hpp CCommon.h
-	$(CPP) -c $(STATS)/StatC.cxx -o OF/StatC.o
-OF/GraphModelC.o : $(GRAPH)/GraphModelC.cxx $(NODE)/NodeListC.hpp CCommon.h
-	$(CPP) -c $(GRAPH)/GraphModelC.cxx -o OF/GraphModelC.o
+$(OBJ)/AgentC.o : $(GRAPH)/AgentC.cxx $(GRAPH)/AgentC.hpp CCommon.h $(OBJ)
+	$(CPP) -c $(GRAPH)/AgentC.cxx -o $(OBJ)/AgentC.o
+$(OBJ)/NodeC.o : $(NODE)/NodeC.cxx $(NODE)/NodeC.hpp CCommon.h $(OBJ)
+	$(CPP) -c $(NODE)/NodeC.cxx -o $(OBJ)/NodeC.o
+$(OBJ)/NodeListC.o : $(NODE)/NodeListC.cxx $(NODE)/NodeListC.hpp \
+                  $(NODE)/NodeC.hpp CCommon.h $(OBJ)
+	$(CPP) -c $(NODE)/NodeListC.cxx -o $(OBJ)/NodeListC.o
+$(OBJ)/ModelC.o : $(MODEL)/ModelC.cxx $(NODE)/NodeListC.hpp CCommon.h $(OBJ)
+	$(CPP) -c $(MODEL)/ModelC.cxx -o $(OBJ)/ModelC.o
+$(OBJ)/StatC.o : $(STATS)/StatC.cxx $(NODE)/NodeListC.hpp CCommon.h $(OBJ)
+	$(CPP) -c $(STATS)/StatC.cxx -o $(OBJ)/StatC.o
+$(OBJ)/GraphModelC.o : $(GRAPH)/GraphModelC.cxx $(NODE)/NodeListC.hpp \
+                    CCommon.h  $(OBJ)
+	$(CPP) -c $(GRAPH)/GraphModelC.cxx -o $(OBJ)/GraphModelC.o
+
+$(OBJ):
+	mkdir $(OBJ)
 
 clean :
-	rm -f OF/*.o MODF/*.mod *~
-reset :
-	rm -f *.dat GIF/*.gif PPM/*.ppm sng
+	rm -f $(OBJ)/*.o *~
+	rmdir  $(OBJ)
+
+.PHONY: clean $(OBJ)
