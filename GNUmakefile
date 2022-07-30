@@ -23,7 +23,8 @@ ifeq ($(UNAME_S),Darwin)
 	         -framework Cocoa -g -Wno-deprecated
 endif
 ifeq ($(UNAME_S),Linux)
-	GLFLAGS= -lglut -lGL -lGLU -lX11 -lm -L/usr/X11R6/lib
+	GLFLAGS= -lglut -lGL -lGLU -lX11 -lm -L/usr/X11R6/lib \
+                 -Wno-psabi
 endif
 
 NODE = Node

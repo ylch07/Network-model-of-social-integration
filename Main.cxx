@@ -182,7 +182,9 @@ void display() {
  ****************************************************************/
 void MaterialProperties(double r, double g, double b) {
 	GLfloat ambient[4], diffuse[4], specular[4], shininess=32.0;
-	GLfloat mat_color[3] = {r, g, b};
+	GLfloat mat_color[3] = { static_cast<float>(r), 
+				 static_cast<float>(g), 
+				 static_cast<float>(b) };
 	
 	for(int i=0; i<3; i++) {
 	  //	ambient[i] = 0.3*mat_color[i];
