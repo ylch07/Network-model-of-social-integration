@@ -115,7 +115,7 @@ void init_graph() {
     objects are modified.
  **************************************************************/
 void display() {
-  void MaterialProperties(double, double, double);
+  void MaterialProperties(float, float, float);
   void LightingProperties(void);
 
   // clear the display
@@ -180,11 +180,9 @@ void display() {
    For example:
       http://devernay.free.fr/cours/opengl/materials.html
  ****************************************************************/
-void MaterialProperties(double r, double g, double b) {
+void MaterialProperties(float r, float g, float b) {
 	GLfloat ambient[4], diffuse[4], specular[4], shininess=32.0;
-	GLfloat mat_color[3] = { static_cast<float>(r), 
-				 static_cast<float>(g), 
-				 static_cast<float>(b) };
+	GLfloat mat_color[3] = { r, g, b };
 	
 	for(int i=0; i<3; i++) {
 	  //	ambient[i] = 0.3*mat_color[i];
