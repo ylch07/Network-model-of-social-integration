@@ -40,6 +40,7 @@
 	     setGuestsIdling
 	  <<ModelC.cxx>>
              setDefaultParameters
+	     resetParametersFromFile
 	     changeParameter
 	     hostInitiation
 	     nextTimeStep
@@ -96,13 +97,11 @@ struct modelParameters {
   double kappa;
   double alpha;
   double gamma;
-  double beta;
   double welfare;
   bool enable_op;  // enable or disable the change of opinions
   bool enable_net; // enable or disable the change of connections
   // The next 2 are not currently implemented.
-  int iniConnect;  // initial number of connections per node
-  double ini_hlink_frac; // initial fraction of host connections per node
+  double ini_hlink_frac; // initial fraction of host connections per node (currently not in use, may belong to the initial conditions in Main.cxx)
 };
 
 /**************************************************************
@@ -147,7 +146,9 @@ public:
   void linkGuests2FractionHosts(int nLinkEach, int n_host, double hfrac); // in NodeListC.cxx
   double hostInitiation(void); // in ModelC.cxx
   // For model parameters (ModelC.cxx)
+  void resetParametersFromFile(string file_name);
   void changeParameter(string pname, double value);
+  void changeParameter(string pname, bool value);
   // For running the model simulation (ModelC.cxx)
   void nextTimeStep(void);
   vector<double> utilityFunction(int ntype1, double x1, int ntype2, double x2);

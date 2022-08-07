@@ -4,6 +4,7 @@
    -----
    Subroutines related to model simulation:
       init_model - sets the initial conditions and model parameters.
+      read_init_cond - reads the initial conditions from an input file.
       model - runs model simulations
       output - writes simulations to the terminal.
    Subroutines related to graphic display:
@@ -19,13 +20,20 @@
 #include "Main.H"
 #include "Node/NodeListC.hpp"
 #include"Graphics/GraphicCommon.hpp"
-#define N 500                 // define the total number of nodes
-#define Immigrant_Number 50   // define the number of guest nodes
-#define Immigrant_Ratio 0.1   // If $(Immigrant_Number)=0, we define the number of guests through this ratio. (In other words, if we want zero guests, set both to zero.)
+//#define N 500                 // define the total number of nodes
+//#define Immigrant_Number 50   // define the number of guest nodes
+//#define Immigrant_Ratio 0.1   // If $(Immigrant_Number)=0, we define the number of guests through this ratio. (In other words, if we want zero guests, set both to zero.)
 
 // Global vairables for the model simulation
 nodeList *nlist;         // List of nodes
 long int t = 0;          // time 
+struct iniConditions {   // Parameters for the initial conditions
+  int n_node;
+  int immigrant_number;
+  double immigrant_ratio; // It is used only when immigrant_number=0.
+  int initial_connections;
+  double initial_opinions;
+} initial_conditions = { 500, 50, 0.1, 5, 1.0 }; // default values
 
 // Global variables for the graphic display
 double *x,*c;
@@ -53,14 +61,17 @@ int run_id=0;
 int main(int argc, char* argv[]) {
 
   int base_id, er_status;
-  void init_model(void);
+  void init_model(string file_name = "");
   void init_graph(void);
   void display(void);
   void keys(unsigned char, int, int);
   void idle(void);
 
   // Initiate the model
-  init_model();
+  string file_name = "";
+  if (argc == 2)
+    file_name.assign(argv[1]);
+  init_model(file_name);
 
   // Initiate the graphic interface
   glutInit(&argc, argv);
@@ -263,34 +274,51 @@ void keys(unsigned char k, int x, int y) {
 /******************************************************************
  This subroutine initiates the model.
  ******************************************************************/
-void init_model(void) {
-  // Use $(Immigrant_Number) to define the number of guest nodes if it
-  //   is not zero; otherwise, use $(Immigrant_Ratio) to define the ratio
-  //   of guest nodes.
-  if(Immigrant_Number != 0)
-    nlist = new nodeList(N, static_cast<int>(Immigrant_Number), 5);
+void init_model(string file_name) {
+  void read_init_cond(string);
+
+  // If an input file is given, read the initial conditions from it.
+  if(file_name.length()>0)
+    read_init_cond(file_name); 
+  // Use $(initial_conditions.immigrant_number) to define the number of 
+  //   guest nodes if it is not zero; 
+  //   otherwise, use $(initial_conditions.immigrant_ratio) to define 
+  //   the ratio of guest nodes.
+  if(initial_conditions.immigrant_number != 0)
+    nlist = new nodeList(initial_conditions.n_node,
+			 static_cast<int>(initial_conditions.immigrant_number),
+			 initial_conditions.initial_connections,
+			 initial_conditions.initial_opinions);
   else
-    nlist = new nodeList(N, static_cast<double>(Immigrant_Ratio), 5);
+    nlist = new nodeList(initial_conditions.n_node, 
+			 static_cast<double>(initial_conditions.immigrant_ratio),
+			 initial_conditions.initial_connections,
+			 initial_conditions.initial_opinions);
   //nlist->hostInitiation();
+  // If an input file is given, read the model parameters from it.
+  if(file_name.length()>0)
+    nlist->resetParametersFromFile(file_name);
 
   // The vector $(x) and $(c) obtain respectively the (x,y) coordinates
   //     and the opinions to draw the nodes in the graphic display later 
-  x = new double[2*N];
-  c = new double[N];
+  int n_node = initial_conditions.n_node;
+  x = new double[2*n_node];
+  c = new double[n_node];
   vector<node> node_list = nlist->getMemberNodes();
-  for(int i=0; i<N; i++) {
+  for(int i=0; i<n_node; i++) {
     vector<double> tmpos;
     tmpos = node_list[i].getGraphAgent().getPos();
     x[i] = tmpos[0];
-    x[i+N] = tmpos[1];
+    x[i+n_node] = tmpos[1];
     c[i] = node_list[i].getOpinion();
   }
 
   // The boolean vector $(connection) specify if there is a connection
   //   between a pair of nodes; here we initiate it with no connections
   //   at all (false) and will update it later.
-  connection = new bool[N*N];
-  for(int i=0; i<N*N; i++) connection[i] = false;
+  int n_square = n_node*n_node;
+  connection = new bool[n_square];
+  for(int i=0; i<n_square; i++) connection[i] = false;
 }
 
 /******************************************************************
@@ -326,15 +354,60 @@ void model(int t_steps) {
 
   // Update the global variables $(x) and $(c)
   vector<node> node_list = nlist->getMemberNodes();
-  for(int i=0; i<N; i++) {
+  int n_node = nlist->getNumMemberNodes();
+  for(int i=0; i<n_node; i++) {
     vector<double> tmpos;
     tmpos = node_list[i].getGraphAgent().getPos();
     x[i] = tmpos[0];
-    x[i+N] = tmpos[1];
+    x[i+n_node] = tmpos[1];
     c[i] = node_list[i].getOpinion();
   }
 
 }
+
+/******************************************************************
+ This subroutine reads the initial conditions from an input file.
+  Input ---
+     file_name: name of the input file
+ +++++
+  Note ---
+     Whenever a new parameters for the initial conditions is added
+     here, remember to set an exception in the subroutine
+     resetParametersFromFile in Model/ModelC.cxx, or else 
+     it will return an error message.
+ ******************************************************************/
+void read_init_cond(string file_name) {
+  string line;
+  ifstream input_file(file_name.data());
+  if (input_file.is_open()) {
+    while (getline(input_file, line)) {
+      stringstream line_stream(line);
+      string pname;
+      line_stream >> pname;
+      if(pname.compare("n_node")==0) {
+	int value;
+	line_stream >> initial_conditions.n_node;
+      } else if(pname.compare("immigrant_number")==0) {
+	int value;
+	line_stream >> initial_conditions.immigrant_number;
+      } else if(pname.compare("immigrant_ratio")==0) {
+	double value;
+	line_stream >> initial_conditions.immigrant_ratio;
+      } else if(pname.compare("initial_connections")==0) {
+	int value;
+	line_stream >> initial_conditions.initial_connections;
+      } else if(pname.compare("initial_opinions")==0) {
+	double value;
+	line_stream >> initial_conditions.initial_opinions;
+      } // end of if pname is some string statement
+    } // end of getline from input_file loop
+    input_file.close();
+  } else {
+    cout << "Error in read_init_cond in Main.cxx: unable to open " << file_name.data() << endl;
+    cout << "      The simulation will proceed with the default parameter values." << endl;
+  } // end of if file is open statement
+}
+
 
 /******************************************************************
   This subroutine prints the statistical results in the terminal
