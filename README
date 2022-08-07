@@ -16,9 +16,10 @@ doi: 10.3934/nhm.2019004
       	      ./adapt input.txt
 
    adapt is the executable that we have just compiled;
-   input.txt is a text file that contains the parameter values of the model. 
-   You can run "./adapt" without the text input file, and the simulation will
-   run with the default parameter values predefined in the program. 
+   input.txt is an optional text file containing the parameter values of the model. 
+
+   If an input file is not given, the simulation will run with default parameter
+   values predefined in the program. 
 
 3. I created several key functions for the graphic display:
 
