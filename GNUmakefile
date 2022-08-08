@@ -42,23 +42,23 @@ adapt :  $(OBJ)/AgentC.o $(OBJ)/NodeC.o $(OBJ)/NodeListC.o \
                         Main.cxx \
                         $(LDFLAGS) $(GLFLAGS)
 
-$(OBJ)/AgentC.o : $(GRAPH)/AgentC.cxx $(GRAPH)/AgentC.hpp CCommon.h $(OBJ)
+$(OBJ)/AgentC.o : $(GRAPH)/AgentC.cxx $(GRAPH)/AgentC.hpp CCommon.h | $(OBJ)
 	$(CPP) -c $(GRAPH)/AgentC.cxx -o $(OBJ)/AgentC.o
-$(OBJ)/NodeC.o : $(NODE)/NodeC.cxx $(NODE)/NodeC.hpp CCommon.h $(OBJ)
+$(OBJ)/NodeC.o : $(NODE)/NodeC.cxx $(NODE)/NodeC.hpp CCommon.h | $(OBJ)
 	$(CPP) -c $(NODE)/NodeC.cxx -o $(OBJ)/NodeC.o
 $(OBJ)/NodeListC.o : $(NODE)/NodeListC.cxx $(NODE)/NodeListC.hpp \
-                  $(NODE)/NodeC.hpp CCommon.h $(OBJ)
+                  $(NODE)/NodeC.hpp CCommon.h | $(OBJ)
 	$(CPP) -c $(NODE)/NodeListC.cxx -o $(OBJ)/NodeListC.o
-$(OBJ)/ModelC.o : $(MODEL)/ModelC.cxx $(NODE)/NodeListC.hpp CCommon.h $(OBJ)
+$(OBJ)/ModelC.o : $(MODEL)/ModelC.cxx $(NODE)/NodeListC.hpp CCommon.h | $(OBJ)
 	$(CPP) -c $(MODEL)/ModelC.cxx -o $(OBJ)/ModelC.o
-$(OBJ)/StatC.o : $(STATS)/StatC.cxx $(NODE)/NodeListC.hpp CCommon.h $(OBJ)
+$(OBJ)/StatC.o : $(STATS)/StatC.cxx $(NODE)/NodeListC.hpp CCommon.h | $(OBJ)
 	$(CPP) -c $(STATS)/StatC.cxx -o $(OBJ)/StatC.o
 $(OBJ)/GraphModelC.o : $(GRAPH)/GraphModelC.cxx $(NODE)/NodeListC.hpp \
-                    CCommon.h  $(OBJ)
+                    CCommon.h | $(OBJ)
 	$(CPP) -c $(GRAPH)/GraphModelC.cxx -o $(OBJ)/GraphModelC.o
 
 $(OBJ):
-	mkdir $(OBJ)
+	mkdir -p $(OBJ)
 
 clean :
 	rm -f $(OBJ)/*.o *~
