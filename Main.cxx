@@ -20,9 +20,6 @@
 #include "Main.H"
 #include "Node/NodeListC.hpp"
 #include"Graphics/GraphicCommon.hpp"
-//#define N 500                 // define the total number of nodes
-//#define Immigrant_Number 50   // define the number of guest nodes
-//#define Immigrant_Ratio 0.1   // If $(Immigrant_Number)=0, we define the number of guests through this ratio. (In other words, if we want zero guests, set both to zero.)
 
 // Global vairables for the model simulation
 nodeList *nlist;         // List of nodes
