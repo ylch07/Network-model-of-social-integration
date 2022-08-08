@@ -3,6 +3,7 @@
    This file contains subroutines and functions related to
      simulating the population model.
             void setDefaultParameters
+	    void resetParametersFromFile
 	    void changeParameter
 	    double hostInitiation
             void nextTimeStep
@@ -46,16 +47,55 @@ void nodeList::setDefaultParameters(void) {
   par.kappa = 100.0;
   par.alpha = 3.0;
   par.gamma = 1.0;
-  par.beta = 0.0;
   par.welfare = 0.0;
-  par.iniConnect = 10;
   par.enable_op = true;
   par.enable_net = true;
   par.ini_hlink_frac = 0.9;
 }
 
 /***********************************************************
-  This subroutine changes the values of the model parameters.
+  This subroutine resets the values of the model parameters
+      from a text input file.
+  Input values:
+     $(file_name) specifies the name of the input file.
+ ***********************************************************/
+void nodeList::resetParametersFromFile(string file_name) {
+  string line;
+  ifstream input_file(file_name.data());
+  if (input_file.is_open()) {
+    while (getline(input_file, line)) {
+      stringstream line_stream(line);
+      string pname;
+      line_stream >> pname;
+      if(   (pname.compare("enable_op")==0)
+	 || (pname.compare("enable_net")==0) ) {
+	bool value;
+	line_stream >> value;
+	changeParameter(pname, value);
+	cout << "bool" << endl;
+	cout << pname.data() << " is " << value << endl;
+      } else if(   (pname.compare("n_node")==0)
+		|| (pname.compare("immigrant_number")==0) 
+		|| (pname.compare("immigrant_ratio")==0) 
+		|| (pname.compare("initial_connections")==0) 
+		|| (pname.compare("initial_opinions")==0) ) {
+	// do nothing (parameters for initial conditions)
+      } else {
+	double value;
+	line_stream >> value;
+	changeParameter(pname, value);
+	cout << pname.data() << " is " << value << endl;
+      } // end of if pname is some string statement
+    } // end of getline from input_file loop
+    input_file.close();
+  } else {
+    cout << "Error in resetParametersFromFile in ModelC.cxx: unable to open " << file_name.data() << endl;
+    cout << "      The simulation will proceed with the default parameter values." << endl;
+  } // end of if file open statement
+}
+
+/***********************************************************
+  This subroutine changes the values of the real number parameters.
   Input values:
      $(pname) specifies which parameter value to change.
      $(value) gives the value to change to.
@@ -65,8 +105,10 @@ void nodeList::changeParameter(string pname, double value) {
     par.AH = value;
   else if(pname.compare("AG")==0)
     par.AG = value;
-  else if(pname.compare("sigma")==0) {
+  else if(pname.compare("sigmaH")==0) {
     par.sigmaH = value;
+  }
+  else if(pname.compare("sigmaG")==0) {
     par.sigmaG = value;
   }
   else if(pname.compare("alpha")==0)
@@ -77,8 +119,25 @@ void nodeList::changeParameter(string pname, double value) {
     par.kappa = value;
   else if(pname.compare("welfare")==0)
     par.welfare = value;
-  else if(pname.compare("hlink")==0)
+  else if(pname.compare("ini_hlink_frac")==0)
     par.ini_hlink_frac = value;
+  else {
+    cout << "no parameter called " << pname << endl;
+    exit(1);
+  }
+}
+
+/***********************************************************
+  This subroutine changes the values of the logical parameters.
+  Input values:
+     $(pname) specifies which parameter value to change.
+     $(value) gives the value to change to.
+ ***********************************************************/
+void nodeList::changeParameter(string pname, bool value) {
+  if(pname.compare("enable_op")==0)
+    par.enable_op = value;
+  else if(pname.compare("enable_net")==0)
+    par.enable_net = value;
   else {
     cout << "no parameter called " << pname << endl;
     exit(1);

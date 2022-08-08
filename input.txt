@@ -1,0 +1,16 @@
+n_node	500
+immigrant_number	50
+immigrant_ratio		0.1
+initial_connections	5
+initial_opinions	1.0
+AH	10.0
+AG	10.0
+sigmaH	1.0
+sigmaG	1.0
+kappa	100.0
+alpha	3.0
+gamma	1.0
+welfare	0.0
+enable_op	1
+enable_net	1
+ini_hlink_frac	0.9
